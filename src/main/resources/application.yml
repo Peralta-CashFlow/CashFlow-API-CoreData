@@ -1,0 +1,44 @@
+# App Config
+
+application:
+  title: CashFlow-API-CoreData
+  version: @project.version@
+  description: @project.description@
+  contact:
+    email: vinicius.peralta@hotmail.com
+    name: Vinicius Peralta
+  cross:
+    origin: ${APP_CROSS_ORIGIN}
+
+# Server Config
+
+server:
+  port: ${SERVER_PORT}
+
+# Spring Config
+
+spring:
+  datasource:
+    url: ${DATABASE_CONNECTION_STRING}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+
+# Spring Doc
+
+springdoc:
+  api-docs:
+    version: OPENAPI_3_0
+  swagger-ui:
+    enabled: true
