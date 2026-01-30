@@ -21,7 +21,7 @@ public class SecurityConfig {
         return CashFlowSecurityConfig.securityFilterChain(
                 httpSecurity,
                 null,
-                null
+                new String[] {}
         );
     }
 }

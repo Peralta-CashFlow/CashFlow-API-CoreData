@@ -5,7 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.cashflow.auth", "com.cashflow.exception.core.handler"})
+@ComponentScan(basePackages = {
+		"com.cashflow.coredata",
+		"com.cashflow.exception.core.handler",
+		"com.cashflow.auth"
+})
 public class ApiCoreDataApplication {
 
 	public static void main(String[] args) {

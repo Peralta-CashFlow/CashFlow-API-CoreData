@@ -2,6 +2,7 @@ package com.cashflow.coredata.domain.entities;
 
 import com.cashflow.coredata.domain.enums.FinancialType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 @Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tb_category")
 public class Category implements Serializable {
 
@@ -21,7 +23,7 @@ public class Category implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
