@@ -1,5 +1,6 @@
 package com.cashflow.coredata.domain.entities;
 
+import com.cashflow.coredata.domain.enums.FinancialType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,5 +39,8 @@ public class Category implements Serializable {
     @Column(nullable = false, name = "user_id")
     private long userId;
 
-
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FinancialType financialType;
+    
 }
