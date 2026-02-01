@@ -1,0 +1,19 @@
+name: Deploy Main - Java Back End
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sonar-analysis:
+    name: Call Sonar Analysis Workflow
+    uses: Peralta-CashFlow/CashFlow-WorkFlows/.github/workflows/sonar-analysis-v1.yml@main
+    permissions:
+      contents: read
+      packages: read
+    with:
+      sonar_project_key: ${{ vars.SONAR_PROJECT_KEY }}
+      java_version: '25'
+      java_distribution: 'zulu'
+    secrets: inherit
