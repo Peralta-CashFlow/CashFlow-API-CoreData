@@ -1,0 +1,21 @@
+name: Pull Request - Java Back End
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  back-end-workflow:
+    name: Call Back-End Pull Request Workflow
+    uses: Peralta-CashFlow/CashFlow-WorkFlows/.github/workflows/pull-request-back-end-v1.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
+      packages: read
+    with:
+      sonar_project_key: ${{ vars.SONAR_PROJECT_KEY }}
+      java_version: '25'
+      java_distribution: 'zulu'
+    secrets: inherit
