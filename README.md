@@ -7,9 +7,50 @@
 
 # Summary
 
+- [Category](#category)
+  - [Registration](#category-registration)
 - [Containerization](#containerization)
 - [Observability](#observability)
 - [Environment Variables](#environment-variables)
+
+# Category
+
+This is the base CashFlow data responsible for, as it's name says, categorization of expenses and incomes making it easier 
+to track and organize your financial life.
+
+## Category Registration
+
+To register a new category, you need to provide the following information:
+
+- **name**: Category name;
+- **color**: The color in HEX format (optional);
+- **icon**: An icon that refers to the category (optional);
+- **type**: The type of the category ('E' for expense and 'I' for income);
+
+The system will validate the information received to check if all data is valid and if the 
+category does not already exists.
+
+### Endpoint
+
+`[POST] /api/core/category`
+
+### Flowchart
+
+```mermaid
+flowchart
+    A((START)) --> B
+    B{Request valid?} -- Yes --> C
+    B -- No --> D[Return 400 Bad Request]
+    C[Check if category already exists] --> E
+    E{Category already exists?} -- No --> F
+    E -- Yes --> G[Return 409 Conflict]
+    F[Save new user] --> H[Return 200 Create]
+
+    style A stroke:#FF6D00
+    style D stroke:#D50000
+    style G stroke:#D50000
+    style H stroke:#00C853
+```
 
 # Containerization
 
