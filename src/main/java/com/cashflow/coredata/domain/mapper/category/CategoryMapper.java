@@ -18,8 +18,7 @@ public class CategoryMapper {
                 request.color(),
                 request.icon(),
                 true,
-                Objects.requireNonNull(authentication.getCredentials()).id(),
-                request.type()
+                Objects.requireNonNull(authentication.getCredentials()).id()
         );
     }
 
@@ -28,8 +27,7 @@ public class CategoryMapper {
                 category.getId(),
                 category.getName(),
                 category.getColor(),
-                category.getIcon(),
-                category.getType().getDescription()
+                category.getIcon()
         );
     }
 }

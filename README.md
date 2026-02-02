@@ -25,7 +25,6 @@ To register a new category, you need to provide the following information:
 - **name**: Category name;
 - **color**: The color in HEX format (optional);
 - **icon**: An icon that refers to the category (optional);
-- **type**: The type of the category ('E' for expense and 'I' for income);
 
 The system will validate the information received to check if all data is valid and if the 
 category does not already exists.

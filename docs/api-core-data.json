@@ -147,15 +147,6 @@
             "type": "string",
             "description": "Category icon",
             "example": ":)"
-          },
-          "type": {
-            "type": "string",
-            "description": "Type of the category",
-            "example": "E",
-            "enum": [
-              "E",
-              "I"
-            ]
           }
         },
         "description": "Category creation request"
@@ -183,11 +174,6 @@
             "type": "string",
             "description": "Category icon",
             "example": ":)"
-          },
-          "type": {
-            "type": "string",
-            "description": "Category type",
-            "example": "Expense"
           }
         },
         "description": "Category response"

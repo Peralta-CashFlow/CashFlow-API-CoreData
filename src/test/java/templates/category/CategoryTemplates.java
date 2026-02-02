@@ -3,7 +3,6 @@ package templates.category;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
 import com.cashflow.coredata.domain.dto.response.CategoryResponse;
 import com.cashflow.coredata.domain.entities.Category;
-import com.cashflow.coredata.domain.enums.FinancialType;
 
 public class CategoryTemplates {
 
@@ -13,8 +12,7 @@ public class CategoryTemplates {
         return new CategoryCreationRequest(
                 "Groceries",
                 "#FF5733",
-                ":)",
-                FinancialType.E
+                ":)"
         );
     }
 
@@ -23,8 +21,7 @@ public class CategoryTemplates {
                 1L,
                 "Groceries",
                 "#FF5733",
-                ":)",
-                FinancialType.E.getDescription()
+                ":)"
         );
     }
 
@@ -35,8 +32,7 @@ public class CategoryTemplates {
                 "color",
                 "icon",
                 true,
-                1L,
-                FinancialType.E
+                1L
         );
     }
 }
