@@ -1,0 +1,223 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CashFlow-API-CoreData",
+    "description": "This API is responsible for core data management on CashFlow app.",
+    "contact": {
+      "name": "Vinicius Peralta",
+      "email": "vinicius.peralta@hotmail.com"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    },
+    "version": "0.0.3"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8091",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Category",
+      "description": "Category related operations"
+    }
+  ],
+  "paths": {
+    "/core/category": {
+      "post": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Register a new Category",
+        "description": "Should register a new category from the provided request data",
+        "operationId": "registerCategory",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Language to be used on response messages",
+            "example": "en"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT token",
+            "required": true,
+            "example": "JWT.TOKEN.HERE"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryCreationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Category registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - JWT token is missing or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Category already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CategoryCreationRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "Category name",
+            "example": "Groceries"
+          },
+          "color": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "Category color in HEX format",
+            "example": "#FF5733"
+          },
+          "icon": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "Category icon",
+            "example": ":)"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the category",
+            "example": "E",
+            "enum": [
+              "E",
+              "I"
+            ]
+          }
+        },
+        "description": "Category creation request"
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Category ID",
+            "format": "int64",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Category name",
+            "example": "Groceries"
+          },
+          "color": {
+            "type": "string",
+            "description": "Category color in HEX format",
+            "example": "#FF5733"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Category icon",
+            "example": ":)"
+          },
+          "type": {
+            "type": "string",
+            "description": "Category type",
+            "example": "Expense"
+          }
+        },
+        "description": "Category response"
+      },
+      "ExceptionResponse": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Exception title",
+            "example": "Invalid request data"
+          },
+          "message": {
+            "type": "string",
+            "description": "Exception message",
+            "example": "The provided request data is invalid."
+          },
+          "className": {
+            "type": "string",
+            "description": "Exception class name",
+            "example": "UserController.java"
+          },
+          "methodName": {
+            "type": "string",
+            "description": "Exception method name",
+            "example": "register"
+          }
+        },
+        "description": "CashFlow's Exception base response."
+      }
+    }
+  }
+}
