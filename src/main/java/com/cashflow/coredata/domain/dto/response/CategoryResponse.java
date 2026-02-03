@@ -15,9 +15,6 @@ public record CategoryResponse(
         String color,
 
         @Schema(description = "Category icon", example = ":)")
-        String icon,
-
-        @Schema(description = "Category type", example = "Expense")
-        String type
+        String icon
 ) {
 }

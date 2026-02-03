@@ -85,7 +85,6 @@ class CategoryServiceTest {
             assertEquals(category.getColor(), response.color());
             assertEquals(category.getIcon(), response.icon());
             assertEquals(category.getName(), response.name());
-            assertEquals(category.getType().getDescription(), response.type());
         });
     }
 

@@ -1,6 +1,5 @@
 package com.cashflow.coredata.domain.dto.request.category;
 
-import com.cashflow.coredata.domain.enums.FinancialType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,10 +20,6 @@ public record CategoryCreationRequest(
 
         @Size(max = 20, message = "{category.icon.tooLong}")
         @Schema(description = "Category icon", example = ":)")
-        String icon,
-
-        @Schema(description = "Type of the category", example = "E")
-        FinancialType type
-
+        String icon
 ) {
 }

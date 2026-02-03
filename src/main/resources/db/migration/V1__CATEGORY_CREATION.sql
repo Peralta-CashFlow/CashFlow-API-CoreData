@@ -5,6 +5,5 @@ CREATE TABLE IF NOT EXISTS tb_category (
     color VARCHAR(20) NULL,
     icon VARCHAR(20) CHARACTER SET utf8mb4,
     active BOOLEAN NOT NULL,
-    user_id BIGINT NOT NULL,
-    type VARCHAR(1) NOT NULL
+    user_id BIGINT NOT NULL
 );
