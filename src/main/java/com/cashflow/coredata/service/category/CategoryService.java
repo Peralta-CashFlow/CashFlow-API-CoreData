@@ -1,6 +1,6 @@
 package com.cashflow.coredata.service.category;
 
-import com.cashflow.auth.core.domain.authentication.CashFlowAuthentication;
+import com.cashflow.auth.core.utils.AuthUtils;
 import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
 import com.cashflow.coredata.domain.dto.response.CategoryResponse;
@@ -12,10 +12,7 @@ import com.cashflow.exception.core.CashFlowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class CategoryService implements ICategoryService {
@@ -36,16 +33,17 @@ public class CategoryService implements ICategoryService {
     public CategoryResponse registerCategory(BaseRequest<CategoryCreationRequest> baseRequest) throws CashFlowException {
 
         CategoryCreationRequest request = baseRequest.getRequest();
+        Long userId = AuthUtils.getUserIdFromSecurityContext();
 
         CategoryValidator.validateCategoryCreation(
-                categoryExistsByName(request.name()),
+                categoryExistsByName(request.name(), userId),
                 messageSource,
                 baseRequest.getLanguage()
         );
 
         Category category = categoryRepository.save(CategoryMapper.mapToEntity(
                 request,
-                (CashFlowAuthentication) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication())
+                userId
         ));
 
         log.info("Category created successfully!");
@@ -54,8 +52,8 @@ public class CategoryService implements ICategoryService {
 
     }
 
-    private boolean categoryExistsByName(String name) {
-        return categoryRepository.existsByNameIgnoreCase(name) == 1;
+    private boolean categoryExistsByName(String name, Long userId) {
+        return categoryRepository.existsByNameIgnoreCase(name, userId) == 1;
     }
 
 }
