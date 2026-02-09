@@ -9,6 +9,7 @@ import com.cashflow.coredata.domain.validator.category.CategoryValidator;
 import com.cashflow.coredata.repository.category.CategoryRepository;
 import com.cashflow.exception.core.CashFlowException;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +24,7 @@ import templates.category.CategoryTemplates;
 import templates.security.AuthenticationTemplates;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,16 +43,31 @@ class CategoryServiceTest {
     @Mock
     private MessageSource messageSource;
 
+    @Mock
+    private SecurityContext securityContext;
+
     private Locale locale;
 
     private final CategoryCreationRequest request = CategoryTemplates.categoryCreationRequest();
 
     private final BaseRequest<CategoryCreationRequest> baseRequest = new BaseRequest<>(locale, request);
 
+    private final CashFlowAuthentication authentication = AuthenticationTemplates.cashFlowAuthentication();
+
+    @BeforeEach
+    void setup() {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+    }
+
     @Test
     void givenExistentCategory_whenRegisterCategory_thenThrowCashFlowException() {
 
-        when(categoryRepository.existsByNameIgnoreCase(request.name())).thenReturn(1L);
+        when(categoryRepository.existsByNameIgnoreCase(
+                request.name(),
+                Objects.requireNonNull(authentication.getCredentials()).id())
+        ).thenReturn(1L);
         when(messageSource.getMessage("category.already.exists.title", null, locale)).thenReturn("Title");
         when(messageSource.getMessage("category.already.exists.message", null, locale)).thenReturn("Message");
 
@@ -70,13 +87,12 @@ class CategoryServiceTest {
     void givenNewCategory_whenRegisterCategory_thenReturnCategoryResponse() {
 
         Category category = CategoryTemplates.category();
-        CashFlowAuthentication authentication = AuthenticationTemplates.cashFlowAuthentication();
 
-        when(categoryRepository.existsByNameIgnoreCase(request.name())).thenReturn(0L);
+        when(categoryRepository.existsByNameIgnoreCase(
+                request.name(),
+                Objects.requireNonNull(authentication.getCredentials()).id())
+        ).thenReturn(0L);
         when(categoryRepository.save(any())).thenReturn(category);
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
 
         CategoryResponse response = categoryService.registerCategory(baseRequest);
 

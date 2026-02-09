@@ -11,7 +11,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query(value = "SELECT EXISTS (" +
             "SELECT * FROM tb_category category " +
             "WHERE UPPER(category.name) = UPPER(:name) " +
+            "AND category.user_id = :userId " +
             "AND category.active = true)", nativeQuery = true)
-    Long existsByNameIgnoreCase(String name);
+    Long existsByNameIgnoreCase(String name, Long userId);
 
 }
