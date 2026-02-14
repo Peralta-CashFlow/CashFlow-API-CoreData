@@ -1,6 +1,7 @@
 package com.cashflow.coredata.controller.category;
 
 import com.cashflow.commons.core.dto.request.BaseRequest;
+import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
 import com.cashflow.coredata.domain.dto.response.CategoryResponse;
 import com.cashflow.coredata.service.category.ICategoryService;
@@ -8,11 +9,9 @@ import com.cashflow.exception.core.CashFlowException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
 
@@ -36,6 +35,15 @@ public class CategoryController implements ICategoryController {
     public CategoryResponse registerCategory(CategoryCreationRequest request, Locale language) throws CashFlowException {
         log.info("Received request to register a new category with name: {}", request.name());
         return categoryService.registerCategory(new BaseRequest<>(language, request));
+    }
+
+    @Override
+    @GetMapping("/list")
+    public Page<CategoryResponse> listCategories(Locale language, int pageNumber, int pageSize, String search) {
+        log.info("Received request to list categories..");
+        return categoryService.listCategories(new PageRequest<>(
+                pageNumber, pageSize, language, search
+        ));
     }
 
 }
