@@ -2,6 +2,7 @@ package com.cashflow.coredata.service.category;
 
 import com.cashflow.auth.core.domain.authentication.CashFlowAuthentication;
 import com.cashflow.commons.core.dto.request.BaseRequest;
+import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
 import com.cashflow.coredata.domain.dto.response.CategoryResponse;
 import com.cashflow.coredata.domain.entities.Category;
@@ -16,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import templates.category.CategoryTemplates;
 import templates.security.AuthenticationTemplates;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -53,6 +57,8 @@ class CategoryServiceTest {
     private final BaseRequest<CategoryCreationRequest> baseRequest = new BaseRequest<>(locale, request);
 
     private final CashFlowAuthentication authentication = AuthenticationTemplates.cashFlowAuthentication();
+
+    private final CategoryResponse categoryResponse = CategoryTemplates.categoryResponse();
 
     @BeforeEach
     void setup() {
@@ -102,6 +108,25 @@ class CategoryServiceTest {
             assertEquals(category.getIcon(), response.icon());
             assertEquals(category.getName(), response.name());
         });
+    }
+
+    @Test
+    void givenPageRequest_whenListCategories_thenReturnCategoryResponsePage() {
+
+        PageRequest<Void> pageRequest = new PageRequest<>(0, 10, locale, "search");
+        Page<CategoryResponse> pageResponse = new PageImpl<>(List.of(categoryResponse));
+
+        when(categoryRepository.findByNameLikeIgnoreCase(
+                "search",
+                Objects.requireNonNull(authentication.getCredentials()).id(),
+                pageRequest.getPageable()
+        )).thenReturn(pageResponse);
+
+        assertEquals(
+                pageResponse,
+                categoryService.listCategories(pageRequest)
+        );
+
     }
 
 }
