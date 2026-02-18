@@ -12,6 +12,9 @@ server:
 # Spring Config
 
 spring:
+  data:
+    redis:
+      url: redis://localhost:6379
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -34,3 +37,10 @@ spring:
 jwt:
   secret: 76facb0e88956d6348e0bd2f0aac40d50c64696aab83c13110110d247479c047
   expiration: 3
+
+cashflow:
+  cache:
+    enabled: false
+cache:
+  duration:
+    categories: 10

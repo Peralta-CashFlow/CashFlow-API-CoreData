@@ -1,6 +1,7 @@
 package com.cashflow.coredata.service.category;
 
 import com.cashflow.auth.core.domain.authentication.CashFlowAuthentication;
+import com.cashflow.cache.service.CacheService;
 import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,8 +33,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +51,9 @@ class CategoryServiceTest {
 
     @Mock
     private SecurityContext securityContext;
+
+    @Mock
+    private CacheService cacheService;
 
     private Locale locale;
 
@@ -77,7 +82,9 @@ class CategoryServiceTest {
         when(messageSource.getMessage("category.already.exists.title", null, locale)).thenReturn("Title");
         when(messageSource.getMessage("category.already.exists.message", null, locale)).thenReturn("Message");
 
-        CashFlowException exception = assertThrows(CashFlowException.class, () -> categoryService.registerCategory(baseRequest));
+        CashFlowException exception = assertThrows(CashFlowException.class, () -> categoryService.registerCategory(
+                baseRequest, Objects.requireNonNull(authentication.getCredentials()).id())
+        );
 
         assertAll(() -> {
             assertEquals(HttpStatus.BAD_REQUEST.value(), exception.getHttpStatusCode());
@@ -100,13 +107,16 @@ class CategoryServiceTest {
         ).thenReturn(0L);
         when(categoryRepository.save(any())).thenReturn(category);
 
-        CategoryResponse response = categoryService.registerCategory(baseRequest);
+        CategoryResponse response = categoryService.registerCategory(
+                baseRequest, Objects.requireNonNull(authentication.getCredentials()).id()
+        );
 
         assertAll(() -> {
             assertEquals(category.getId(), response.id());
             assertEquals(category.getColor(), response.color());
             assertEquals(category.getIcon(), response.icon());
             assertEquals(category.getName(), response.name());
+            verify(cacheService, times(1)).invalidateCacheByPattern(anyString());
         });
     }
 
@@ -114,7 +124,7 @@ class CategoryServiceTest {
     void givenPageRequest_whenListCategories_thenReturnCategoryResponsePage() {
 
         PageRequest<Void> pageRequest = new PageRequest<>(0, 10, locale, "search");
-        Page<CategoryResponse> pageResponse = new PageImpl<>(List.of(categoryResponse));
+        Page<CategoryResponse> pageResponse = new PageImpl<>(List.of(categoryResponse), Pageable.ofSize(20), 1);
 
         when(categoryRepository.findByNameLikeIgnoreCase(
                 "search",
@@ -123,8 +133,8 @@ class CategoryServiceTest {
         )).thenReturn(pageResponse);
 
         assertEquals(
-                pageResponse,
-                categoryService.listCategories(pageRequest)
+                categoryResponse,
+                categoryService.listCategories(pageRequest, Objects.requireNonNull(authentication.getCredentials()).id()).response().getFirst()
         );
 
     }

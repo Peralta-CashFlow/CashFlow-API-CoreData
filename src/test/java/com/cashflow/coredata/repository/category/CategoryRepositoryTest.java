@@ -1,5 +1,6 @@
 package com.cashflow.coredata.repository.category;
 
+import com.cashflow.cache.service.CacheService;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.response.CategoryResponse;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Locale;
 
@@ -19,6 +21,9 @@ class CategoryRepositoryTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @MockitoBean
+    private CacheService cacheService;
 
     private final PageRequest<Void> pageRequest = new PageRequest<>(0, 2, Locale.ENGLISH, "");
 
