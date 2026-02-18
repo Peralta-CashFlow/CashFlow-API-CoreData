@@ -1,5 +1,6 @@
 package com.cashflow.coredata.controller.category;
 
+import com.cashflow.commons.core.dto.response.PageResponse;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
 import com.cashflow.coredata.domain.dto.response.CategoryResponse;
 import com.cashflow.exception.core.CashFlowException;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,7 +72,7 @@ public interface ICategoryController {
             @ApiResponse(responseCode = "200", description = "List of categories retrieved",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class)))
     })
-    Page<CategoryResponse> listCategories(
+    PageResponse<CategoryResponse> listCategories(
             @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") int pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,

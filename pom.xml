@@ -170,7 +170,7 @@
 		<dependency>
 			<groupId>com.peralta.cashflow</groupId>
 			<artifactId>cashflow-commons</artifactId>
-			<version>0.0.3</version>
+			<version>0.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.peralta.cashflow</groupId>
@@ -181,6 +181,11 @@
 			<groupId>com.peralta.cashflow</groupId>
 			<artifactId>cashflow-exceptions</artifactId>
 			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.peralta.cashflow</groupId>
+			<artifactId>cashflow-cache</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 
 	</dependencies>
