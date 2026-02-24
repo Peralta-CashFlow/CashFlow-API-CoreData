@@ -117,6 +117,93 @@
           }
         ]
       }
+    },
+    "/core/category/list": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "List categories",
+        "description": "Should return a paged response of categories from the provided request data",
+        "operationId": "listCategories",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Language to be used on response messages",
+            "example": "en"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT token",
+            "required": true,
+            "example": "JWT.TOKEN.HERE"
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "description": "The requested page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 1
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The page size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "example": 10
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "The filter text search",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            },
+            "example": "filter"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized - JWT token is missing or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List of categories retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
     }
   },
   "components": {
