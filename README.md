@@ -9,6 +9,7 @@
 
 - [Category](#category)
   - [Registration](#category-registration)
+  - [List](#category-list)
 - [Containerization](#containerization)
 - [Observability](#observability)
 - [Environment Variables](#environment-variables)
@@ -51,6 +52,32 @@ flowchart
     style H stroke:#00C853
 ```
 
+## Category List
+
+To list categories you can use the following filters:
+
+- **pageNumber**: The page number to retrieve (optional, default is 0);
+- **pageSize**: The number of items per page (optional, default is 10);
+- **search**: A search term to filter categories by name (optional);
+
+### Endpoint
+
+`[GET] /api/core/category/list`
+
+### Flowchart
+
+```mermaid
+flowchart
+    A((START)) --> B
+    B{Cache exists for request parameters?} -- No --> D[Query database for categories]
+    B -- Yes --> C[Return 200 - Cached response]
+    D --> E[Return 200 - Categories list]
+
+    style A stroke:#FF6D00
+    style C stroke:#00C853
+    style E stroke:#00C853
+```
+
 # Containerization
 
 To run the API in a containerized environment, you can use Docker. Access this [DockerHub](https://hub.docker.com/r/viniciusperalta/cashflow-api-core-data)
@@ -73,3 +100,5 @@ Reefer to the Organization's documentation for more details about observability.
 - APP_CROSS_ORIGIN;
 - SERVER_PORT;
 - JWT_SECRET;
+- REDIS_CONNECTION_STRING;
+- CACHE_DURATION_CATEGORIES;
