@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,6 +40,9 @@ public class Category extends BaseAudit implements Serializable {
 
     @Column(nullable = false, name = "user_id")
     private long userId;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Tag> tags;
 
     public Category(String name, String color, String icon, boolean active, long userId) {
         this.name = name;
