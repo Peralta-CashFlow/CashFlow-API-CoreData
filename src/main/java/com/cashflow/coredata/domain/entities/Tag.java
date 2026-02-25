@@ -1,7 +1,7 @@
 package com.cashflow.coredata.domain.entities;
 
-import com.cashflow.commons.core.dto.entity.BaseAudit;
 import jakarta.persistence.*;
+import com.cashflow.commons.core.dto.entity.BaseAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
