@@ -1,9 +1,9 @@
-package com.cashflow.coredata.domain.dto.response;
+package com.cashflow.coredata.domain.dto.response.category;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Category response")
-public record CategoryResponse(
+@Schema(description = "Category summarized response")
+public record CategorySummaryResponse(
 
         @Schema(description = "Category ID", example = "1")
         Long id,

@@ -5,7 +5,7 @@ import com.cashflow.cache.service.CacheService;
 import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.domain.entities.Category;
 import com.cashflow.coredata.domain.validator.category.CategoryValidator;
 import com.cashflow.coredata.repository.category.CategoryRepository;
@@ -63,7 +63,7 @@ class CategoryServiceTest {
 
     private final CashFlowAuthentication authentication = AuthenticationTemplates.cashFlowAuthentication();
 
-    private final CategoryResponse categoryResponse = CategoryTemplates.categoryResponse();
+    private final CategorySummaryResponse categorySummaryResponse = CategoryTemplates.categorySummaryResponse();
 
     @BeforeEach
     void setup() {
@@ -107,7 +107,7 @@ class CategoryServiceTest {
         ).thenReturn(0L);
         when(categoryRepository.save(any())).thenReturn(category);
 
-        CategoryResponse response = categoryService.registerCategory(
+        CategorySummaryResponse response = categoryService.registerCategory(
                 baseRequest, Objects.requireNonNull(authentication.getCredentials()).id()
         );
 
@@ -124,7 +124,7 @@ class CategoryServiceTest {
     void givenPageRequest_whenListCategories_thenReturnCategoryResponsePage() {
 
         PageRequest<Void> pageRequest = new PageRequest<>(0, 10, locale, "search");
-        Page<CategoryResponse> pageResponse = new PageImpl<>(List.of(categoryResponse), Pageable.ofSize(20), 1);
+        Page<CategorySummaryResponse> pageResponse = new PageImpl<>(List.of(categorySummaryResponse), Pageable.ofSize(20), 1);
 
         when(categoryRepository.findByNameLikeIgnoreCase(
                 "search",
@@ -133,7 +133,7 @@ class CategoryServiceTest {
         )).thenReturn(pageResponse);
 
         assertEquals(
-                categoryResponse,
+                categorySummaryResponse,
                 categoryService.listCategories(pageRequest, Objects.requireNonNull(authentication.getCredentials()).id()).response().getFirst()
         );
 

@@ -2,7 +2,7 @@ package com.cashflow.coredata.controller.category;
 
 import com.cashflow.commons.core.dto.response.PageResponse;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.exception.core.CashFlowException;
 import com.cashflow.exception.core.domain.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,7 @@ public interface ICategoryController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category registered successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategorySummaryResponse.class))
             ),
             @ApiResponse(responseCode = "400", description = "Invalid request data",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
@@ -48,7 +48,7 @@ public interface ICategoryController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    CategoryResponse registerCategory(
+    CategorySummaryResponse registerCategory(
             @Valid @RequestBody CategoryCreationRequest request,
             @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language
     ) throws CashFlowException;
@@ -70,9 +70,9 @@ public interface ICategoryController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "200", description = "List of categories retrieved",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategorySummaryResponse.class)))
     })
-    PageResponse<CategoryResponse> listCategories(
+    PageResponse<CategorySummaryResponse> listCategories(
             @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") int pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,

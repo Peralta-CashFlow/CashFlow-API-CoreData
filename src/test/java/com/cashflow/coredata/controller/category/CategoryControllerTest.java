@@ -2,7 +2,7 @@ package com.cashflow.coredata.controller.category;
 
 import com.cashflow.auth.core.domain.authentication.CashFlowAuthentication;
 import com.cashflow.commons.core.dto.response.PageResponse;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.service.category.ICategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -39,7 +39,7 @@ class CategoryControllerTest {
     private ICategoryService categoryService;
 
     private static final String BASE_REQUEST_URL = "/core/category";
-    private final CategoryResponse categoryResponse = CategoryTemplates.categoryResponse();
+    private final CategorySummaryResponse categorySummaryResponse = CategoryTemplates.categorySummaryResponse();
     private final CashFlowAuthentication authentication = AuthenticationTemplates.cashFlowAuthentication();
 
     @Autowired
@@ -61,20 +61,20 @@ class CategoryControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(CategoryTemplates.categoryCreationRequest());
 
-        when(categoryService.registerCategory(any(), any())).thenReturn(categoryResponse);
+        when(categoryService.registerCategory(any(), any())).thenReturn(categorySummaryResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_REQUEST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonRequest))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(categoryResponse)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(categorySummaryResponse)));
     }
 
     @Test
     @SneakyThrows
     void givenParameter_whenListCategories_thenReturnCategoryResponsePage() {
 
-        PageResponse<CategoryResponse> response = new PageResponse<>(new ArrayList<>(List.of(categoryResponse)), 1, 0, 10, 1);
+        PageResponse<CategorySummaryResponse> response = new PageResponse<>(new ArrayList<>(List.of(categorySummaryResponse)), 1, 0, 10, 1);
 
         when(categoryService.listCategories(any(), any())).thenReturn(response);
 

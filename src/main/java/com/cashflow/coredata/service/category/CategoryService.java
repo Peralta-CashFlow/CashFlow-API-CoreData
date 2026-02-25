@@ -5,7 +5,7 @@ import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.commons.core.dto.response.PageResponse;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.domain.entities.Category;
 import com.cashflow.coredata.domain.mapper.category.CategoryMapper;
 import com.cashflow.coredata.domain.validator.category.CategoryValidator;
@@ -45,7 +45,7 @@ public class CategoryService implements ICategoryService {
 
     @Override
     @Transactional
-    public CategoryResponse registerCategory(BaseRequest<CategoryCreationRequest> baseRequest, Long userId) throws CashFlowException {
+    public CategorySummaryResponse registerCategory(BaseRequest<CategoryCreationRequest> baseRequest, Long userId) throws CashFlowException {
 
         CategoryCreationRequest request = baseRequest.getRequest();
 
@@ -79,13 +79,13 @@ public class CategoryService implements ICategoryService {
             value = CacheNames.CATEGORIES,
             key = "#userId + '-' + #request.search + '-' + #request.pageable.pageNumber + '-' + #request.pageable.pageSize"
     )
-    public PageResponse<CategoryResponse> listCategories(PageRequest<Void> request, Long userId) {
+    public PageResponse<CategorySummaryResponse> listCategories(PageRequest<Void> request, Long userId) {
 
         String search = request.getSearch();
 
         log.info("Searching user: {} categories with search: {}", userId, search);
 
-        Page<CategoryResponse> response = categoryRepository.findByNameLikeIgnoreCase(search, userId, request.getPageable());
+        Page<CategorySummaryResponse> response = categoryRepository.findByNameLikeIgnoreCase(search, userId, request.getPageable());
 
         log.info("Found {} categories!", response.getTotalElements());
 

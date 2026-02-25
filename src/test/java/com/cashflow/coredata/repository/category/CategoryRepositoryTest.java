@@ -2,7 +2,7 @@ package com.cashflow.coredata.repository.category;
 
 import com.cashflow.cache.service.CacheService;
 import com.cashflow.commons.core.dto.request.PageRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +29,7 @@ class CategoryRepositoryTest {
 
     @Test
     void givenFoodFilter_whenFindByNameLikeIgnoreCase_thenReturnOneResult() {
-        Page<CategoryResponse> response = categoryRepository.findByNameLikeIgnoreCase("food", 5L, pageRequest.getPageable());
+        Page<CategorySummaryResponse> response = categoryRepository.findByNameLikeIgnoreCase("food", 5L, pageRequest.getPageable());
         assertAll(() -> {
             assertEquals(1, response.getTotalElements());
             assertEquals("Food", response.getContent().getFirst().name());
@@ -38,13 +38,13 @@ class CategoryRepositoryTest {
 
     @Test
     void givenUserIdWithoutCategories_whenFindByNameLikeIgnoreCase_thenReturnNoResult() {
-        Page<CategoryResponse> response = categoryRepository.findByNameLikeIgnoreCase("", 404L, pageRequest.getPageable());
+        Page<CategorySummaryResponse> response = categoryRepository.findByNameLikeIgnoreCase("", 404L, pageRequest.getPageable());
         assertEquals(0, response.getTotalElements());
     }
 
     @Test
     void givenEmptyFilterSearch_whenFindByNameLikeIgnoreCase_thenReturnPagedResponse() {
-        Page<CategoryResponse> response = categoryRepository.findByNameLikeIgnoreCase("", 5L, pageRequest.getPageable());
+        Page<CategorySummaryResponse> response = categoryRepository.findByNameLikeIgnoreCase("", 5L, pageRequest.getPageable());
         assertAll(() -> {
             assertEquals(3L, response.getTotalElements());
             assertEquals(2, response.getTotalPages());

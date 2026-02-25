@@ -1,7 +1,7 @@
 package templates.category;
 
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.domain.entities.Category;
 
 public class CategoryTemplates {
@@ -16,8 +16,8 @@ public class CategoryTemplates {
         );
     }
 
-    public static CategoryResponse categoryResponse() {
-        return new CategoryResponse(
+    public static CategorySummaryResponse categorySummaryResponse() {
+        return new CategorySummaryResponse(
                 1L,
                 "Groceries",
                 "#FF5733",
