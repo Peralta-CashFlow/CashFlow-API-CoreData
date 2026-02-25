@@ -12,8 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -25,7 +24,7 @@ class CategoryRepositoryTest {
     @MockitoBean
     private CacheService cacheService;
 
-    private final PageRequest<Void> pageRequest = new PageRequest<>(0, 2, Locale.ENGLISH, "");
+    private final PageRequest<Void> pageRequest = new PageRequest<>(0, 2, Locale.ENGLISH, "", 1L);
 
     @Test
     void givenFoodFilter_whenFindByNameLikeIgnoreCase_thenReturnOneResult() {
@@ -50,6 +49,28 @@ class CategoryRepositoryTest {
             assertEquals(2, response.getTotalPages());
             assertEquals(2, response.getContent().size());
         });
+    }
+
+    @Test
+    void givenValidCategoryIdAndUserId_whenFindByIdAndUserId_thenReturnCategory() {
+        var response = categoryRepository.findByIdAndUserId(1L, 5L);
+        assertAll(() -> {
+            assertTrue(response.isPresent());
+            assertEquals(1L, response.get().getId());
+            assertEquals(5L, response.get().getUserId());
+        });
+    }
+
+    @Test
+    void givenInvalidCategoryIdAndUserId_whenFindByIdAndUserId_thenReturnEmpty() {
+        var response = categoryRepository.findByIdAndUserId(404L, 5L);
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    void givenValidCategoryIdAndInvalidUserId_whenFindByIdAndUserId_thenReturnEmpty() {
+        var response = categoryRepository.findByIdAndUserId(1L, 404L);
+        assertTrue(response.isEmpty());
     }
 
 }
