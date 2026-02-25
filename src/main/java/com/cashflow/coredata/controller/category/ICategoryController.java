@@ -2,7 +2,8 @@ package com.cashflow.coredata.controller.category;
 
 import com.cashflow.commons.core.dto.response.PageResponse;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.exception.core.CashFlowException;
 import com.cashflow.exception.core.domain.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +35,7 @@ public interface ICategoryController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category registered successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategorySummaryResponse.class))
             ),
             @ApiResponse(responseCode = "400", description = "Invalid request data",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
@@ -48,7 +50,7 @@ public interface ICategoryController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    CategoryResponse registerCategory(
+    CategorySummaryResponse registerCategory(
             @Valid @RequestBody CategoryCreationRequest request,
             @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language
     ) throws CashFlowException;
@@ -70,12 +72,38 @@ public interface ICategoryController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "200", description = "List of categories retrieved",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategorySummaryResponse.class)))
     })
-    PageResponse<CategoryResponse> listCategories(
+    PageResponse<CategorySummaryResponse> listCategories(
             @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") int pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,
             @RequestParam(name = "search", required = false, defaultValue = "") String search
     );
+
+    @Operation(
+            summary = "Get category by ID",
+            description = "Should return a category response for the provided category ID",
+            security = @SecurityRequirement(name = "Authorization"),
+            parameters = {
+                    @Parameter(name = "Accept-Language", description = "Language to be used on response messages", in = ParameterIn.HEADER, example = "en"),
+                    @Parameter(name = "Authorization", description = "JWT token", in = ParameterIn.HEADER, required = true, example = "JWT.TOKEN.HERE"),
+                    @Parameter(name = "categoryId", description = "The category ID to retrieve", in = ParameterIn.QUERY, example = "1")
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Not Found - No category found with the provided ID",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "200", description = "Category retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class))
+            )
+    })
+    CategoryResponse getCategoryById(
+            @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
+            @PathVariable(name = "categoryId") Long categoryId
+    ) throws CashFlowException;
 }

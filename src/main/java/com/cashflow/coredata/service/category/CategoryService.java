@@ -5,7 +5,8 @@ import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.commons.core.dto.response.PageResponse;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.domain.entities.Category;
 import com.cashflow.coredata.domain.mapper.category.CategoryMapper;
 import com.cashflow.coredata.domain.validator.category.CategoryValidator;
@@ -19,7 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 public class CategoryService implements ICategoryService {
@@ -45,9 +49,10 @@ public class CategoryService implements ICategoryService {
 
     @Override
     @Transactional
-    public CategoryResponse registerCategory(BaseRequest<CategoryCreationRequest> baseRequest, Long userId) throws CashFlowException {
+    public CategorySummaryResponse registerCategory(BaseRequest<CategoryCreationRequest> baseRequest) throws CashFlowException {
 
         CategoryCreationRequest request = baseRequest.getRequest();
+        long userId = baseRequest.getUserId();
 
         CategoryValidator.validateCategoryCreation(
                 categoryExistsByName(request.name(), userId),
@@ -66,7 +71,7 @@ public class CategoryService implements ICategoryService {
                 cacheKeyPrefix + CacheNames.CATEGORIES + CacheNames.SEPARATOR + userId + "-*"
         );
 
-        return CategoryMapper.mapToResponse(category);
+        return CategoryMapper.mapToSummaryResponse(category);
 
     }
 
@@ -79,13 +84,14 @@ public class CategoryService implements ICategoryService {
             value = CacheNames.CATEGORIES,
             key = "#userId + '-' + #request.search + '-' + #request.pageable.pageNumber + '-' + #request.pageable.pageSize"
     )
-    public PageResponse<CategoryResponse> listCategories(PageRequest<Void> request, Long userId) {
+    public PageResponse<CategorySummaryResponse> listCategories(PageRequest<Void> request) {
 
         String search = request.getSearch();
+        long userId = request.getUserId();
 
         log.info("Searching user: {} categories with search: {}", userId, search);
 
-        Page<CategoryResponse> response = categoryRepository.findByNameLikeIgnoreCase(search, userId, request.getPageable());
+        Page<CategorySummaryResponse> response = categoryRepository.findByNameLikeIgnoreCase(search, userId, request.getPageable());
 
         log.info("Found {} categories!", response.getTotalElements());
 
@@ -97,5 +103,34 @@ public class CategoryService implements ICategoryService {
                 response.getTotalPages()
         );
     }
+
+    @Override
+    public CategoryResponse getCategoryById(BaseRequest<Long> baseRequest) throws CashFlowException {
+        return CategoryMapper.mapToResponse(
+                getCategoryByIdAndUserId(baseRequest.getRequest(), baseRequest.getUserId(), baseRequest.getLanguage())
+        );
+    }
+
+    private Category getCategoryByIdAndUserId(Long categoryId, Long userId, Locale language) throws CashFlowException {
+        log.info("Fetching category with id: {} from user: {}", categoryId, userId);
+
+        Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() -> {
+                            log.error("Category not found.");
+                            return new CashFlowException(
+                                    HttpStatus.NOT_FOUND.value(),
+                                    messageSource.getMessage("category.not.found.title", null, language),
+                                    messageSource.getMessage("category.not.found.message", null, language),
+                                    CategoryService.class.getName(),
+                                    "getCategoryByIdAndUserId"
+                            );
+                        }
+                );
+
+        log.info("Category successfully retrieved.");
+
+        return category;
+    }
+
 
 }

@@ -5,8 +5,11 @@ import com.cashflow.cache.service.CacheService;
 import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
-import com.cashflow.coredata.domain.dto.response.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
+import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
+import com.cashflow.coredata.domain.dto.response.tag.TagResponse;
 import com.cashflow.coredata.domain.entities.Category;
+import com.cashflow.coredata.domain.entities.Tag;
 import com.cashflow.coredata.domain.validator.category.CategoryValidator;
 import com.cashflow.coredata.repository.category.CategoryRepository;
 import com.cashflow.exception.core.CashFlowException;
@@ -59,11 +62,11 @@ class CategoryServiceTest {
 
     private final CategoryCreationRequest request = CategoryTemplates.categoryCreationRequest();
 
-    private final BaseRequest<CategoryCreationRequest> baseRequest = new BaseRequest<>(locale, request);
-
     private final CashFlowAuthentication authentication = AuthenticationTemplates.cashFlowAuthentication();
 
-    private final CategoryResponse categoryResponse = CategoryTemplates.categoryResponse();
+    private final BaseRequest<CategoryCreationRequest> baseRequest = new BaseRequest<>(locale, request, Objects.requireNonNull(authentication.getCredentials()).id());
+
+    private final CategorySummaryResponse categorySummaryResponse = CategoryTemplates.categorySummaryResponse();
 
     @BeforeEach
     void setup() {
@@ -82,9 +85,7 @@ class CategoryServiceTest {
         when(messageSource.getMessage("category.already.exists.title", null, locale)).thenReturn("Title");
         when(messageSource.getMessage("category.already.exists.message", null, locale)).thenReturn("Message");
 
-        CashFlowException exception = assertThrows(CashFlowException.class, () -> categoryService.registerCategory(
-                baseRequest, Objects.requireNonNull(authentication.getCredentials()).id())
-        );
+        CashFlowException exception = assertThrows(CashFlowException.class, () -> categoryService.registerCategory(baseRequest));
 
         assertAll(() -> {
             assertEquals(HttpStatus.BAD_REQUEST.value(), exception.getHttpStatusCode());
@@ -107,9 +108,7 @@ class CategoryServiceTest {
         ).thenReturn(0L);
         when(categoryRepository.save(any())).thenReturn(category);
 
-        CategoryResponse response = categoryService.registerCategory(
-                baseRequest, Objects.requireNonNull(authentication.getCredentials()).id()
-        );
+        CategorySummaryResponse response = categoryService.registerCategory(baseRequest);
 
         assertAll(() -> {
             assertEquals(category.getId(), response.id());
@@ -123,8 +122,8 @@ class CategoryServiceTest {
     @Test
     void givenPageRequest_whenListCategories_thenReturnCategoryResponsePage() {
 
-        PageRequest<Void> pageRequest = new PageRequest<>(0, 10, locale, "search");
-        Page<CategoryResponse> pageResponse = new PageImpl<>(List.of(categoryResponse), Pageable.ofSize(20), 1);
+        PageRequest<Void> pageRequest = new PageRequest<>(0, 10, locale, "search", Objects.requireNonNull(authentication.getCredentials()).id());
+        Page<CategorySummaryResponse> pageResponse = new PageImpl<>(List.of(categorySummaryResponse), Pageable.ofSize(20), 1);
 
         when(categoryRepository.findByNameLikeIgnoreCase(
                 "search",
@@ -133,10 +132,57 @@ class CategoryServiceTest {
         )).thenReturn(pageResponse);
 
         assertEquals(
-                categoryResponse,
-                categoryService.listCategories(pageRequest, Objects.requireNonNull(authentication.getCredentials()).id()).response().getFirst()
+                categorySummaryResponse,
+                categoryService.listCategories(pageRequest).response().getFirst()
         );
 
+    }
+
+    @Test
+    void givenBaseRequest_whenGetCategoryById_thenReturnCategoryResponse() throws CashFlowException {
+
+        Category category = CategoryTemplates.category();
+        Tag firstTag = category.getTags().getFirst();
+
+        when(categoryRepository.findByIdAndUserId(
+                1L,
+                Objects.requireNonNull(authentication.getCredentials()).id()
+        )).thenReturn(java.util.Optional.of(category));
+
+        CategoryResponse categoryResponse = categoryService.getCategoryById(new BaseRequest<>(locale, 1L, Objects.requireNonNull(authentication.getCredentials()).id()));
+        TagResponse firstTagResponse = categoryResponse.tags().getFirst();
+
+        assertAll(() -> {
+            assertEquals(category.getId(), categoryResponse.id());
+            assertEquals(category.getName(), categoryResponse.name());
+            assertEquals(category.getColor(), categoryResponse.color());
+            assertEquals(category.getIcon(), categoryResponse.icon());
+            assertEquals(category.getCreatedAt(), categoryResponse.createdAt());
+            assertEquals(category.getUpdatedAt(), categoryResponse.updatedAt());
+            assertEquals(firstTag.getId(), firstTagResponse.id());
+            assertEquals(firstTag.getName(), firstTagResponse.name());
+        });
+    }
+
+    @Test
+    void givenBaseRequestWithNonExistentCategoryId_whenGetCategoryById_thenThrowCashFlowException() {
+
+        when(categoryRepository.findByIdAndUserId(
+                1L,
+                Objects.requireNonNull(authentication.getCredentials()).id()
+        )).thenReturn(java.util.Optional.empty());
+        when(messageSource.getMessage("category.not.found.title", null, locale)).thenReturn("Title");
+        when(messageSource.getMessage("category.not.found.message", null, locale)).thenReturn("Message");
+
+        CashFlowException exception = assertThrows(CashFlowException.class, () -> categoryService.getCategoryById(new BaseRequest<>(locale, 1L, Objects.requireNonNull(authentication.getCredentials()).id())));
+
+        assertAll(() -> {
+            assertEquals(HttpStatus.NOT_FOUND.value(), exception.getHttpStatusCode());
+            assertEquals("Title", exception.getTitle());
+            assertEquals("Message", exception.getMessage());
+            assertEquals(CategoryService.class.getName(), exception.getClassName());
+            assertEquals("getCategoryByIdAndUserId", exception.getMethodName());
+        });
     }
 
 }

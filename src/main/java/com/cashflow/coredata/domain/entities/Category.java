@@ -1,6 +1,7 @@
 package com.cashflow.coredata.domain.entities;
 
 import jakarta.persistence.*;
+import com.cashflow.commons.core.dto.entity.BaseAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +17,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_category")
-public class Category implements Serializable {
+public class Category extends BaseAudit implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -39,4 +41,15 @@ public class Category implements Serializable {
     @Column(nullable = false, name = "user_id")
     private long userId;
 
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Tag> tags;
+
+    public Category(String name, String color, String icon, boolean active, long userId) {
+        this.name = name;
+        this.color = color;
+        this.icon = icon;
+        this.active = active;
+        this.userId = userId;
+        this.createAudit(userId);
+    }
 }
