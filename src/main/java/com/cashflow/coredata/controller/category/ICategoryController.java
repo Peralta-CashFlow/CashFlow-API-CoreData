@@ -2,6 +2,7 @@ package com.cashflow.coredata.controller.category;
 
 import com.cashflow.commons.core.dto.response.PageResponse;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
+import com.cashflow.coredata.domain.dto.request.category.CategoryEditionRequest;
 import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
 import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.exception.core.CashFlowException;
@@ -105,5 +106,36 @@ public interface ICategoryController {
     CategoryResponse getCategoryById(
             @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
             @PathVariable(name = "categoryId") Long categoryId
+    ) throws CashFlowException;
+
+    @Operation(
+            summary = "Edit category by ID",
+            description = "Should edit a category for the provided category ID and request data",
+            security = @SecurityRequirement(name = "Authorization"),
+            parameters = {
+                    @Parameter(name = "Accept-Language", description = "Language to be used on response messages", in = ParameterIn.HEADER, example = "en"),
+                    @Parameter(name = "Authorization", description = "JWT token", in = ParameterIn.HEADER, required = true, example = "JWT.TOKEN.HERE")
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Not Found - No category found with the provided ID",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Duplicate category name - Another category with the same name already exists",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Duplicate tag name - Another tag with the same name already exists in the category",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "200", description = "Category edited successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class))
+            )
+    })
+    CategoryResponse editCategoryById(
+            @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
+            @Valid @RequestBody CategoryEditionRequest request
     ) throws CashFlowException;
 }

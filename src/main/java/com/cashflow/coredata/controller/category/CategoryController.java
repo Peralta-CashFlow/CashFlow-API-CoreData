@@ -1,5 +1,6 @@
 package com.cashflow.coredata.controller.category;
 
+import com.cashflow.coredata.domain.dto.request.category.CategoryEditionRequest;
 import org.springframework.web.bind.annotation.*;
 import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
 
@@ -56,6 +57,13 @@ public class CategoryController implements ICategoryController {
     public CategoryResponse getCategoryById(Locale language, @PathVariable Long categoryId) throws CashFlowException {
         log.info("Received request to get category details by id...");
         return categoryService.getCategoryById(new BaseRequest<>(language, categoryId, AuthUtils.getUserIdFromSecurityContext()));
+    }
+
+    @Override
+    @PatchMapping
+    public CategoryResponse editCategoryById(Locale language, CategoryEditionRequest request) throws CashFlowException {
+        log.info("Received request to edit category details by id...");
+        return categoryService.editCategoryById(new BaseRequest<>(language, request, AuthUtils.getUserIdFromSecurityContext()));
     }
 
 }

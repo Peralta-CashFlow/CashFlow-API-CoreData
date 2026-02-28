@@ -5,12 +5,14 @@ import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.commons.core.dto.response.PageResponse;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
+import com.cashflow.coredata.domain.dto.request.category.CategoryEditionRequest;
 import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
 import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.domain.entities.Category;
 import com.cashflow.coredata.domain.mapper.category.CategoryMapper;
 import com.cashflow.coredata.domain.validator.category.CategoryValidator;
 import com.cashflow.coredata.repository.category.CategoryRepository;
+import com.cashflow.coredata.service.tag.ITagService;
 import com.cashflow.coredata.utils.constants.cache.CacheNames;
 import com.cashflow.exception.core.CashFlowException;
 import jakarta.transaction.Transactional;
@@ -39,12 +41,16 @@ public class CategoryService implements ICategoryService {
 
     private final CacheService cacheService;
 
+    private final ITagService tagService;
+
     public CategoryService(final CategoryRepository categoryRepository,
                            final MessageSource messageSource,
-                           final CacheService cacheService) {
+                           final CacheService cacheService,
+                           final ITagService tagService) {
         this.categoryRepository = categoryRepository;
         this.messageSource = messageSource;
         this.cacheService = cacheService;
+        this.tagService = tagService;
     }
 
     @Override
@@ -109,6 +115,39 @@ public class CategoryService implements ICategoryService {
         return CategoryMapper.mapToResponse(
                 getCategoryByIdAndUserId(baseRequest.getRequest(), baseRequest.getUserId(), baseRequest.getLanguage())
         );
+    }
+
+    @Override
+    @Transactional
+    public CategoryResponse editCategoryById(BaseRequest<CategoryEditionRequest> baseRequest) throws CashFlowException {
+
+        log.info("Editing category...");
+
+        CategoryEditionRequest categoryEditionRequest = baseRequest.getRequest();
+        Long userId = baseRequest.getUserId();
+        Locale language = baseRequest.getLanguage();
+
+        Category category = getCategoryByIdAndUserId(categoryEditionRequest.id(), userId, language);
+
+        CategoryValidator.validateCategoryCreation(
+                categoryExistsByName(categoryEditionRequest.name(), userId),
+                messageSource,
+                baseRequest.getLanguage()
+        );
+
+        CategoryMapper.updateFromRequest(category, categoryEditionRequest, userId);
+
+        tagService.editTagsFromRequest(category, new BaseRequest<>(language, categoryEditionRequest.tags(), userId));
+
+        category = categoryRepository.save(category);
+
+        cacheService.invalidateCacheByPattern(
+                cacheKeyPrefix + CacheNames.CATEGORIES + CacheNames.SEPARATOR + userId + "-*"
+        );
+
+        log.info("Category updated successfully!");
+
+        return CategoryMapper.mapToResponse(category);
     }
 
     private Category getCategoryByIdAndUserId(Long categoryId, Long userId, Locale language) throws CashFlowException {
