@@ -66,8 +66,8 @@ class CategoryControllerTest {
         when(categoryService.registerCategory(any())).thenReturn(categorySummaryResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_REQUEST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(categorySummaryResponse)));
     }
@@ -81,7 +81,7 @@ class CategoryControllerTest {
         when(categoryService.listCategories(any())).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.get(BASE_REQUEST_URL + "/list")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -92,7 +92,21 @@ class CategoryControllerTest {
         when(categoryService.getCategoryById(any())).thenReturn(categoryResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.get(BASE_REQUEST_URL + "/1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void givenCategoryEditionRequestWithNullId_whenEditCategoryById_thenReturnBadRequest() {
+
+        String jsonRequest = objectMapper.writeValueAsString(CategoryTemplates.categoryEditionRequest());
+
+        when(categoryService.editCategoryById(any())).thenReturn(categoryResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch(BASE_REQUEST_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
