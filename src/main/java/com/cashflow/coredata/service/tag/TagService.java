@@ -33,14 +33,15 @@ public class TagService implements ITagService {
 
         log.info("Updating tags from request...");
 
+        Long userId = baseRequest.getUserId();
         List<Tag> tags = category.getTags();
         TagValidator.validateTagsEdition(tags, baseRequest, messageSource);
 
         List<TagRequest> tagRequests = baseRequest.getRequest();
 
         removeTags(tagRequests, tags);
-        updateTags(tagRequests, tags);
-        addNewTags(category, tagRequests, tags);
+        updateTags(tagRequests, tags, userId);
+        addNewTags(category, tagRequests, tags, userId);
 
         log.info("Tags updated successfully.");
 
@@ -59,16 +60,17 @@ public class TagService implements ITagService {
         tags.removeAll(tagsToRemove);
     }
 
-    private void updateTags(List<TagRequest> tagRequests, List<Tag> tags) {
+    private void updateTags(List<TagRequest> tagRequests, List<Tag> tags, Long userId) {
         Map<Long, Tag> tagsById = tags.stream().collect(Collectors.toMap(Tag::getId, Function.identity()));
         tagRequests.stream().filter(tagRequest -> tagRequest.id() != null).forEach(tagRequest -> {
             Tag tag = tagsById.get(tagRequest.id());
             tag.setName(tagRequest.name());
+            tag.updateAudit(userId);
         });
     }
 
-    private void addNewTags(Category category, List<TagRequest> tagRequests, List<Tag> tags) {
+    private void addNewTags(Category category, List<TagRequest> tagRequests, List<Tag> tags, Long userId) {
         List<TagRequest> newTags = tagRequests.stream().filter(tagRequest -> tagRequest.id() == null).toList();
-        newTags.forEach(tag -> tags.add(new Tag(tag.name(), category)));
+        newTags.forEach(tag -> tags.add(new Tag(tag.name(), category, userId)));
     }
 }

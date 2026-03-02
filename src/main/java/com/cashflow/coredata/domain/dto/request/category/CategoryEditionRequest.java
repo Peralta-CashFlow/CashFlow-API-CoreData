@@ -2,6 +2,7 @@ package com.cashflow.coredata.domain.dto.request.category;
 
 import com.cashflow.coredata.domain.dto.request.tag.TagRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,7 +13,7 @@ import java.util.List;
 public record CategoryEditionRequest(
 
         @NotNull(message = "{category.id.invalid}")
-        long id,
+        Long id,
 
         @NotNull(message = "{category.name.invalid}")
         @NotEmpty(message = "{category.name.invalid}")
@@ -28,6 +29,7 @@ public record CategoryEditionRequest(
         @Schema(description = "Category icon", example = ":)")
         String icon,
 
+        @Valid
         @NotNull(message = "{category.tags.not.null}")
         @Schema(description = "List of tags associated with the category")
         List<TagRequest> tags

@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 
 public class TagValidator {
 
-    private TagValidator() {}
+    private TagValidator() {
+    }
 
     private static final Logger log = LoggerFactory.getLogger(TagValidator.class);
 
@@ -82,26 +83,24 @@ public class TagValidator {
     private static void validateUpdatedIds(
             List<Tag> savedTags, MessageSource messageSource, List<TagRequest> requestTags, Locale locale
     ) throws CashFlowException {
-        if (!CollectionUtils.isEmpty(savedTags)) {
 
-            List<Long> savedTagsIds = savedTags.stream().map(Tag::getId).toList();
-            List<Long> updatedTagsIds = requestTags.stream().map(TagRequest::id).filter(Objects::nonNull).toList();
+        List<Long> savedTagsIds = savedTags.stream().map(Tag::getId).toList();
+        List<Long> updatedTagsIds = requestTags.stream().map(TagRequest::id).filter(Objects::nonNull).toList();
 
-            List<Long> nonExistingIds = updatedTagsIds.stream()
-                    .filter(id -> !savedTagsIds.contains(id))
-                    .toList();
+        List<Long> nonExistingIds = updatedTagsIds.stream()
+                .filter(id -> !savedTagsIds.contains(id))
+                .toList();
 
-            if (!nonExistingIds.isEmpty()) {
-                String joined = nonExistingIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
-                log.error("Updated Tag IDs from request not found in the category: {}", joined);
-                throw new CashFlowException(
-                        HttpStatus.BAD_REQUEST.value(),
-                        messageSource.getMessage("tag.edited.not.found.title", null, locale),
-                        messageSource.getMessage("tag.edited.not.found.message", null, locale),
-                        TagValidator.class.getName(),
-                        "validateTagsEdition"
-                );
-            }
+        if (!nonExistingIds.isEmpty()) {
+            String joined = nonExistingIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
+            log.error("Updated Tag IDs from request not found in the category: {}", joined);
+            throw new CashFlowException(
+                    HttpStatus.BAD_REQUEST.value(),
+                    messageSource.getMessage("tag.edited.not.found.title", null, locale),
+                    messageSource.getMessage("tag.edited.not.found.message", null, locale),
+                    TagValidator.class.getName(),
+                    "validateTagsEdition"
+            );
         }
     }
 

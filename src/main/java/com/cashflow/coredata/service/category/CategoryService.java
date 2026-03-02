@@ -81,7 +81,7 @@ public class CategoryService implements ICategoryService {
 
     }
 
-    private boolean categoryExistsByName(String name, Long userId) {
+    private boolean categoryExistsByName(String name, long userId) {
         return categoryRepository.existsByNameIgnoreCase(name, userId) == 1;
     }
 
@@ -124,13 +124,13 @@ public class CategoryService implements ICategoryService {
         log.info("Editing category...");
 
         CategoryEditionRequest categoryEditionRequest = baseRequest.getRequest();
-        Long userId = baseRequest.getUserId();
+        long userId = baseRequest.getUserId();
         Locale language = baseRequest.getLanguage();
 
         Category category = getCategoryByIdAndUserId(categoryEditionRequest.id(), userId, language);
 
         CategoryValidator.validateCategoryCreation(
-                categoryExistsByName(categoryEditionRequest.name(), userId),
+                categoryExistsByNameAndDifferentId(categoryEditionRequest.name(), userId, categoryEditionRequest.id()),
                 messageSource,
                 baseRequest.getLanguage()
         );
@@ -148,6 +148,10 @@ public class CategoryService implements ICategoryService {
         log.info("Category updated successfully!");
 
         return CategoryMapper.mapToResponse(category);
+    }
+
+    private boolean categoryExistsByNameAndDifferentId(String name, long userId, long categoryId) {
+        return categoryRepository.existsByNameIgnoreCaseDifferentCategoryId(name, userId, categoryId) == 1;
     }
 
     private Category getCategoryByIdAndUserId(Long categoryId, Long userId, Locale language) throws CashFlowException {

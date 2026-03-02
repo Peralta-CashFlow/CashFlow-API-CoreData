@@ -20,6 +20,14 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "AND category.active = true)", nativeQuery = true)
     Long existsByNameIgnoreCase(String name, Long userId);
 
+    @Query(value = "SELECT EXISTS (" +
+            "SELECT * FROM tb_category category " +
+            "WHERE UPPER(category.name) = UPPER(:name) " +
+            "AND category.user_id = :userId " +
+            "AND category.id != :categoryId " +
+            "AND category.active = true)", nativeQuery = true)
+    Long existsByNameIgnoreCaseDifferentCategoryId(String name, Long userId, Long categoryId);
+
     @Query(value = "SELECT new com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse(" +
             " category.id, " +
             " category.name, " +
