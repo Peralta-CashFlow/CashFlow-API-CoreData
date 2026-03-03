@@ -1,6 +1,7 @@
 package com.cashflow.coredata.domain.mapper.category;
 
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
+import com.cashflow.coredata.domain.dto.request.category.CategoryEditionRequest;
 import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
 import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.domain.dto.response.tag.TagResponse;
@@ -46,5 +47,12 @@ public class CategoryMapper {
                         .sorted(Comparator.comparing(TagResponse::name))
                         .toList()
         );
+    }
+
+    public static void updateFromRequest(Category category, CategoryEditionRequest request, Long userId) {
+        category.setName(request.name());
+        category.setColor(request.color());
+        category.setIcon(request.icon());
+        category.updateAudit(userId);
     }
 }

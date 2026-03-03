@@ -1,6 +1,7 @@
 package templates.category;
 
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
+import com.cashflow.coredata.domain.dto.request.category.CategoryEditionRequest;
 import com.cashflow.coredata.domain.dto.response.category.CategoryResponse;
 import com.cashflow.coredata.domain.dto.response.category.CategorySummaryResponse;
 import com.cashflow.coredata.domain.entities.Category;
@@ -53,6 +54,16 @@ public class CategoryTemplates {
                 LocalDateTime.now(),
                 null,
                 TagTemplates.tagResponseList()
+        );
+    }
+
+    public static CategoryEditionRequest categoryEditionRequest() {
+        return new CategoryEditionRequest(
+                1L,
+                "Groceries",
+                "#FF5733",
+                ":)",
+                TagTemplates.tagRequestList()
         );
     }
 }

@@ -32,4 +32,9 @@ public class Tag extends BaseAudit implements Serializable {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    public Tag(String name, Category category, Long userId) {
+        this.name = name;
+        this.category = category;
+        this.createAudit(userId);
+    }
 }
