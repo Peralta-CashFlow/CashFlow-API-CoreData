@@ -67,7 +67,10 @@ class TagServiceTest {
 
         List<TagRequest> duplicatedTagRequest = List.of(
                 new TagRequest(1L, "Tag 1"),
-                new TagRequest(2L, "Tag 1")
+                new TagRequest(2L, "Tag 1"),
+                new TagRequest(null, null),
+                new TagRequest(null, "Tag 1 "),
+                new TagRequest(3L, null)
         );
         BaseRequest<List<TagRequest>> baseRequest = new BaseRequest<>(locale, duplicatedTagRequest, 1L);
 
