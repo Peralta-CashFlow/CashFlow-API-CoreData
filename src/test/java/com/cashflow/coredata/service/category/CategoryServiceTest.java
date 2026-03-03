@@ -1,7 +1,6 @@
 package com.cashflow.coredata.service.category;
 
 import com.cashflow.auth.core.domain.authentication.CashFlowAuthentication;
-import com.cashflow.cache.service.CacheService;
 import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
@@ -38,8 +37,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -56,9 +55,6 @@ class CategoryServiceTest {
 
     @Mock
     private SecurityContext securityContext;
-
-    @Mock
-    private CacheService cacheService;
 
     @Mock
     private TagService tagService;
@@ -126,7 +122,6 @@ class CategoryServiceTest {
             assertEquals(category.getColor(), response.color());
             assertEquals(category.getIcon(), response.icon());
             assertEquals(category.getName(), response.name());
-            verify(cacheService, times(1)).invalidateCacheByPattern(anyString());
         });
     }
 
@@ -273,7 +268,6 @@ class CategoryServiceTest {
             assertEquals(category.getCreatedAt(), response.createdAt());
             assertEquals(category.getUpdatedAt(), response.updatedAt());
             verify(tagService, times(1)).editTagsFromRequest(any(), any());
-            verify(cacheService, times(1)).invalidateCacheByPattern(anyString());
         });
     }
 
