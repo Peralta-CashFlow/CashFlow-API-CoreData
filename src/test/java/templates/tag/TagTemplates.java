@@ -36,11 +36,13 @@ public class TagTemplates {
     }
 
     private static Tag tag(long id, Category category) {
-        return new Tag(
+        Tag tag = new Tag(
                 id,
                 "Tag " + id,
                 category
         );
+        tag.createAudit(category.getUserId());
+        return tag;
     }
 
     public static List<TagRequest> tagRequestList() {

@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -23,7 +22,7 @@ public class TagValidator {
 
     private static final Logger log = LoggerFactory.getLogger(TagValidator.class);
 
-    private static final int MAX_TAGS_PER_CATEGORY = 10;
+    public static final int MAX_TAGS_PER_CATEGORY = 10;
 
     public static void validateTagsEdition(
             List<Tag> savedTags, BaseRequest<List<TagRequest>> baseRequest, MessageSource messageSource
