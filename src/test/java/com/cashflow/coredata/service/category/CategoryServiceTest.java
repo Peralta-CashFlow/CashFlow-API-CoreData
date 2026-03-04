@@ -271,4 +271,47 @@ class CategoryServiceTest {
         });
     }
 
+    @Test
+    void givenBaseRequestWithNonExistentCategoryId_whenDeleteCategoryById_thenThrowCashFlowException() {
+
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
+                1L,
+                userId
+        )).thenReturn(java.util.Optional.empty());
+        when(messageSource.getMessage("category.not.found.title", null, locale)).thenReturn("Title");
+        when(messageSource.getMessage("category.not.found.message", null, locale)).thenReturn("Message");
+
+        BaseRequest<Long> longBaseRequest = new BaseRequest<>(locale, 1L, Objects.requireNonNull(authentication.getCredentials()).id());
+
+        CashFlowException exception = assertThrows(CashFlowException.class, () -> categoryService.deleteCategoryById(longBaseRequest));
+
+        assertAll(() -> {
+            assertEquals(HttpStatus.NOT_FOUND.value(), exception.getHttpStatusCode());
+            assertEquals("Title", exception.getTitle());
+            assertEquals("Message", exception.getMessage());
+            assertEquals(CategoryService.class.getName(), exception.getClassName());
+            assertEquals("getCategoryByIdAndUserId", exception.getMethodName());
+        });
+    }
+
+    @Test
+    void givenValidBaseRequest_whenDeleteCategoryById_thenCategoryShouldBeDeleted() throws CashFlowException {
+
+        Category category = CategoryTemplates.category();
+
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
+                1L,
+                userId
+        )).thenReturn(java.util.Optional.of(category));
+
+        categoryService.deleteCategoryById(new BaseRequest<>(locale, 1L, Objects.requireNonNull(authentication.getCredentials()).id()));
+
+        assertAll(() -> {
+            assertFalse(category.isActive());
+            assertNotNull(category.getUpdatedAt());
+            assertEquals(userId, category.getUpdatedBy());
+            verify(categoryRepository, times(1)).save(category);
+        });
+    }
+
 }
