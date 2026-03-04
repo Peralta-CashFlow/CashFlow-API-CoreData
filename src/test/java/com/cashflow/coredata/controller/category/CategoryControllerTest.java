@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @WebMvcTest(CategoryController.class)
