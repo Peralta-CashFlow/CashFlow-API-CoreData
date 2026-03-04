@@ -138,4 +138,30 @@ public interface ICategoryController {
             @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
             @Valid @RequestBody CategoryEditionRequest request
     ) throws CashFlowException;
+
+    @Operation(
+            summary = "Delete category by ID",
+            description = "Should delete a category and it's tags from the provided category ID",
+            security = @SecurityRequirement(name = "Authorization"),
+            parameters = {
+                    @Parameter(name = "Accept-Language", description = "Language to be used on response messages", in = ParameterIn.HEADER, example = "en"),
+                    @Parameter(name = "Authorization", description = "JWT token", in = ParameterIn.HEADER, required = true, example = "JWT.TOKEN.HERE"),
+                    @Parameter(name = "categoryId", description = "The category ID to delete", in = ParameterIn.QUERY, example = "1")
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Not Found - No category found with the provided ID",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "200", description = "Category deleted successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class))
+            )
+    })
+    void deleteCategoryById(
+            @RequestHeader(name = "Accept-Language", required = false, defaultValue = "en") Locale language,
+            @PathVariable(name = "categoryId") Long categoryId
+    ) throws CashFlowException;
 }

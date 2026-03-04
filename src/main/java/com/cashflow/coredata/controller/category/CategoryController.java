@@ -66,4 +66,11 @@ public class CategoryController implements ICategoryController {
         return categoryService.editCategoryById(new BaseRequest<>(language, request, AuthUtils.getUserIdFromSecurityContext()));
     }
 
+    @Override
+    @DeleteMapping("/{categoryId}")
+    public void deleteCategoryById(Locale language, @PathVariable Long categoryId) throws CashFlowException {
+        log.info("Received request to delete category by id...");
+        categoryService.deleteCategoryById(new BaseRequest<>(language, categoryId, AuthUtils.getUserIdFromSecurityContext()));
+    }
+
 }

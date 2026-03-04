@@ -169,5 +169,24 @@ public class CategoryService implements ICategoryService {
         return category;
     }
 
+    @Override
+    @CacheClear(
+            value = APP_BASE_KEY + CacheNames.CATEGORIES,
+            patterns = { "#baseRequest.userId + '-*'" }
+    )
+    public void deleteCategoryById(BaseRequest<Long> baseRequest) throws CashFlowException {
+
+        log.info("Deleting category logically...");
+
+        long userId = baseRequest.getUserId();
+
+        Category category = getCategoryByIdAndUserId(baseRequest.getRequest(), userId, baseRequest.getLanguage());
+        category.deactivate(userId);
+
+        categoryRepository.save(category);
+
+        log.info("Category deleted successfully!");
+
+    }
 
 }
