@@ -150,8 +150,7 @@ public class CategoryService implements ICategoryService {
 
     private Category getCategoryByIdAndUserId(Long categoryId, Long userId, Locale language) throws CashFlowException {
         log.info("Fetching category with id: {} from user: {}", categoryId, userId);
-
-        Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
+        Category category = categoryRepository.findByIdAndUserIdAndActiveTrue(categoryId, userId)
                 .orElseThrow(() -> {
                             log.error("Category not found.");
                             return new CashFlowException(

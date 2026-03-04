@@ -42,6 +42,12 @@ class CategoryRepositoryTest {
     }
 
     @Test
+    void givenUserIdWithCategoryButNameInactive_whenFindByNameLikeIgnoreCase_thenReturnNoResult() {
+        Page<CategorySummaryResponse> response = categoryRepository.findByNameLikeIgnoreCase("Entertainment", 6L, pageRequest.getPageable());
+        assertEquals(0, response.getTotalElements());
+    }
+
+    @Test
     void givenEmptyFilterSearch_whenFindByNameLikeIgnoreCase_thenReturnPagedResponse() {
         Page<CategorySummaryResponse> response = categoryRepository.findByNameLikeIgnoreCase("", 5L, pageRequest.getPageable());
         assertAll(() -> {
@@ -52,8 +58,8 @@ class CategoryRepositoryTest {
     }
 
     @Test
-    void givenValidCategoryIdAndUserId_whenFindByIdAndUserId_thenReturnCategory() {
-        var response = categoryRepository.findByIdAndUserId(1L, 5L);
+    void givenValidCategoryIdAndUserId_whenFindByIdAndUserId_AndActiveTrue_thenReturnCategory() {
+        var response = categoryRepository.findByIdAndUserIdAndActiveTrue(1L, 5L);
         assertAll(() -> {
             assertTrue(response.isPresent());
             assertEquals(1L, response.get().getId());
@@ -62,14 +68,20 @@ class CategoryRepositoryTest {
     }
 
     @Test
-    void givenInvalidCategoryIdAndUserId_whenFindByIdAndUserId_thenReturnEmpty() {
-        var response = categoryRepository.findByIdAndUserId(404L, 5L);
+    void givenInvalidCategoryIdAndUserId_whenFindByIdAndUserId_AndActiveTrue_thenReturnEmpty() {
+        var response = categoryRepository.findByIdAndUserIdAndActiveTrue(404L, 5L);
         assertTrue(response.isEmpty());
     }
 
     @Test
-    void givenValidCategoryIdAndInvalidUserId_whenFindByIdAndUserId_thenReturnEmpty() {
-        var response = categoryRepository.findByIdAndUserId(1L, 404L);
+    void givenValidCategoryIdAndInvalidUserId_whenFindByIdAndUserId_AndActiveTrue_thenReturnEmpty() {
+        var response = categoryRepository.findByIdAndUserIdAndActiveTrue(1L, 404L);
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    void givenValidCategoryIdAndUserIdButInactive_whenFindByIdAndUserId_AndActiveTrue_thenReturnEmpty() {
+        var response = categoryRepository.findByIdAndUserIdAndActiveTrue(500L, 6L);
         assertTrue(response.isEmpty());
     }
 

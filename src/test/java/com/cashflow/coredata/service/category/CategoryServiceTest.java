@@ -150,7 +150,7 @@ class CategoryServiceTest {
         Category category = CategoryTemplates.category();
         Tag firstTag = category.getTags().getFirst();
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.of(category));
@@ -173,7 +173,7 @@ class CategoryServiceTest {
     @Test
     void givenBaseRequestWithNonExistentCategoryId_whenGetCategoryById_thenThrowCashFlowException() {
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.empty());
@@ -196,7 +196,7 @@ class CategoryServiceTest {
     @Test
     void givenBaseRequestWithNonExistentCategoryId_whenEditCategoryById_thenThrowCashFlowException() {
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.empty());
@@ -219,7 +219,7 @@ class CategoryServiceTest {
 
         Category category = CategoryTemplates.category();
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.of(category));
@@ -247,7 +247,7 @@ class CategoryServiceTest {
 
         Category category = CategoryTemplates.category();
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.of(category));
