@@ -53,4 +53,9 @@ public class Category extends BaseAudit implements Serializable {
         this.userId = userId;
         this.createAudit(userId);
     }
+
+    public void deactivate(Long userId) {
+        this.active = false;
+        this.updateAudit(userId);
+    }
 }

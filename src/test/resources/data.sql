@@ -23,6 +23,11 @@ INSERT INTO tb_category
 (name, color, icon, active, user_id, created_by)
 VALUES('Salary', '#12e80e', '💵', 1, 5, 5);
 
+-- Generating category base with inactive status
+INSERT INTO tb_category
+(id, name, color, icon, active, user_id, created_by, created_at)
+VALUES(500, 'Entertainment', '#e8e812', '🎬', 0, 6, 6, CURRENT_TIMESTAMP);
+
 -- Tag table creation
 CREATE TABLE IF NOT EXISTS tb_tag (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,

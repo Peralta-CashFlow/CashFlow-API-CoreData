@@ -1,7 +1,6 @@
 package com.cashflow.coredata.service.category;
 
 import com.cashflow.auth.core.domain.authentication.CashFlowAuthentication;
-import com.cashflow.cache.service.CacheService;
 import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.coredata.domain.dto.request.category.CategoryCreationRequest;
@@ -56,9 +55,6 @@ class CategoryServiceTest {
 
     @Mock
     private SecurityContext securityContext;
-
-    @Mock
-    private CacheService cacheService;
 
     @Mock
     private TagService tagService;
@@ -126,7 +122,6 @@ class CategoryServiceTest {
             assertEquals(category.getColor(), response.color());
             assertEquals(category.getIcon(), response.icon());
             assertEquals(category.getName(), response.name());
-            verify(cacheService, times(1)).invalidateCacheByPattern(anyString());
         });
     }
 
@@ -155,7 +150,7 @@ class CategoryServiceTest {
         Category category = CategoryTemplates.category();
         Tag firstTag = category.getTags().getFirst();
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.of(category));
@@ -178,7 +173,7 @@ class CategoryServiceTest {
     @Test
     void givenBaseRequestWithNonExistentCategoryId_whenGetCategoryById_thenThrowCashFlowException() {
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.empty());
@@ -201,7 +196,7 @@ class CategoryServiceTest {
     @Test
     void givenBaseRequestWithNonExistentCategoryId_whenEditCategoryById_thenThrowCashFlowException() {
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.empty());
@@ -224,7 +219,7 @@ class CategoryServiceTest {
 
         Category category = CategoryTemplates.category();
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.of(category));
@@ -252,7 +247,7 @@ class CategoryServiceTest {
 
         Category category = CategoryTemplates.category();
 
-        when(categoryRepository.findByIdAndUserId(
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
                 1L,
                 userId
         )).thenReturn(java.util.Optional.of(category));
@@ -273,7 +268,49 @@ class CategoryServiceTest {
             assertEquals(category.getCreatedAt(), response.createdAt());
             assertEquals(category.getUpdatedAt(), response.updatedAt());
             verify(tagService, times(1)).editTagsFromRequest(any(), any());
-            verify(cacheService, times(1)).invalidateCacheByPattern(anyString());
+        });
+    }
+
+    @Test
+    void givenBaseRequestWithNonExistentCategoryId_whenDeleteCategoryById_thenThrowCashFlowException() {
+
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
+                1L,
+                userId
+        )).thenReturn(java.util.Optional.empty());
+        when(messageSource.getMessage("category.not.found.title", null, locale)).thenReturn("Title");
+        when(messageSource.getMessage("category.not.found.message", null, locale)).thenReturn("Message");
+
+        BaseRequest<Long> longBaseRequest = new BaseRequest<>(locale, 1L, Objects.requireNonNull(authentication.getCredentials()).id());
+
+        CashFlowException exception = assertThrows(CashFlowException.class, () -> categoryService.deleteCategoryById(longBaseRequest));
+
+        assertAll(() -> {
+            assertEquals(HttpStatus.NOT_FOUND.value(), exception.getHttpStatusCode());
+            assertEquals("Title", exception.getTitle());
+            assertEquals("Message", exception.getMessage());
+            assertEquals(CategoryService.class.getName(), exception.getClassName());
+            assertEquals("getCategoryByIdAndUserId", exception.getMethodName());
+        });
+    }
+
+    @Test
+    void givenValidBaseRequest_whenDeleteCategoryById_thenCategoryShouldBeDeleted() throws CashFlowException {
+
+        Category category = CategoryTemplates.category();
+
+        when(categoryRepository.findByIdAndUserIdAndActiveTrue(
+                1L,
+                userId
+        )).thenReturn(java.util.Optional.of(category));
+
+        categoryService.deleteCategoryById(new BaseRequest<>(locale, 1L, Objects.requireNonNull(authentication.getCredentials()).id()));
+
+        assertAll(() -> {
+            assertFalse(category.isActive());
+            assertNotNull(category.getUpdatedAt());
+            assertEquals(userId, category.getUpdatedBy());
+            verify(categoryRepository, times(1)).save(category);
         });
     }
 

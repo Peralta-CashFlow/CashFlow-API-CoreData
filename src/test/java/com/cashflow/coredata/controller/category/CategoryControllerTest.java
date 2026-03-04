@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @WebMvcTest(CategoryController.class)
@@ -188,5 +188,13 @@ class CategoryControllerTest {
                         messageSource.getMessage(errorMessageKey, new Object[]{}, Locale.ENGLISH)
                 )
         );
+    }
+
+    @Test
+    void givenCategoryId_whenDeleteCategoryById_thenReturnOk() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete(BASE_REQUEST_URL + "/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        verify(categoryService, times(1)).deleteCategoryById(any());
     }
 }

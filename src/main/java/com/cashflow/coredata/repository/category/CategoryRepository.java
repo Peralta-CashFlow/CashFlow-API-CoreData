@@ -35,9 +35,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             " category.icon " +
             ") FROM Category category " +
             "WHERE category.userId = :userId " +
+            "AND category.active = true " +
             "AND UPPER(category.name) LIKE UPPER(CONCAT('%', :name, '%')) " +
             "ORDER BY category.name ASC")
     Page<CategorySummaryResponse> findByNameLikeIgnoreCase(String name, Long userId, Pageable pageable);
 
-    Optional<Category> findByIdAndUserId(Long id, long userId);
+    Optional<Category> findByIdAndUserIdAndActiveTrue(Long id, long userId);
+
 }

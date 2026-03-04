@@ -15,5 +15,6 @@ public interface ICategoryService {
     PageResponse<CategorySummaryResponse> listCategories(PageRequest<Void> request);
     CategoryResponse getCategoryById(BaseRequest<Long> baseRequest) throws CashFlowException;
     CategoryResponse editCategoryById(BaseRequest<CategoryEditionRequest> baseRequest) throws CashFlowException;
+    void deleteCategoryById(BaseRequest<Long> baseRequest) throws CashFlowException;
 
 }

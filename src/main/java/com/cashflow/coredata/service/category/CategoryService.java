@@ -1,6 +1,6 @@
 package com.cashflow.coredata.service.category;
 
-import com.cashflow.cache.service.CacheService;
+import com.cashflow.cache.annotations.clear.CacheClear;
 import com.cashflow.commons.core.dto.request.BaseRequest;
 import com.cashflow.commons.core.dto.request.PageRequest;
 import com.cashflow.commons.core.dto.response.PageResponse;
@@ -18,7 +18,6 @@ import com.cashflow.exception.core.CashFlowException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -27,11 +26,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
+import static com.cashflow.coredata.utils.constants.cache.CacheNames.APP_BASE_KEY;
+
 @Service
 public class CategoryService implements ICategoryService {
-
-    @Value("${cache.key-prefix}")
-    private String cacheKeyPrefix;
 
     private final Logger log = LoggerFactory.getLogger(CategoryService.class);
 
@@ -39,22 +37,22 @@ public class CategoryService implements ICategoryService {
 
     private final MessageSource messageSource;
 
-    private final CacheService cacheService;
-
     private final ITagService tagService;
 
     public CategoryService(final CategoryRepository categoryRepository,
                            final MessageSource messageSource,
-                           final CacheService cacheService,
                            final ITagService tagService) {
         this.categoryRepository = categoryRepository;
         this.messageSource = messageSource;
-        this.cacheService = cacheService;
         this.tagService = tagService;
     }
 
     @Override
     @Transactional
+    @CacheClear(
+            value = APP_BASE_KEY + CacheNames.CATEGORIES,
+            patterns = { "#baseRequest.userId + '-*'" }
+    )
     public CategorySummaryResponse registerCategory(BaseRequest<CategoryCreationRequest> baseRequest) throws CashFlowException {
 
         CategoryCreationRequest request = baseRequest.getRequest();
@@ -73,10 +71,6 @@ public class CategoryService implements ICategoryService {
 
         log.info("Category created successfully!");
 
-        cacheService.invalidateCacheByPattern(
-                cacheKeyPrefix + CacheNames.CATEGORIES + CacheNames.SEPARATOR + userId + "-*"
-        );
-
         return CategoryMapper.mapToSummaryResponse(category);
 
     }
@@ -88,7 +82,7 @@ public class CategoryService implements ICategoryService {
     @Override
     @Cacheable(
             value = CacheNames.CATEGORIES,
-            key = "#userId + '-' + #request.search + '-' + #request.pageable.pageNumber + '-' + #request.pageable.pageSize"
+            key = "#request.userId + '-' + #request.search + '-' + #request.pageable.pageNumber + '-' + #request.pageable.pageSize"
     )
     public PageResponse<CategorySummaryResponse> listCategories(PageRequest<Void> request) {
 
@@ -119,6 +113,10 @@ public class CategoryService implements ICategoryService {
 
     @Override
     @Transactional
+    @CacheClear(
+            value = APP_BASE_KEY + CacheNames.CATEGORIES,
+            patterns = { "#baseRequest.userId + '-*'" }
+    )
     public CategoryResponse editCategoryById(BaseRequest<CategoryEditionRequest> baseRequest) throws CashFlowException {
 
         log.info("Editing category...");
@@ -141,10 +139,6 @@ public class CategoryService implements ICategoryService {
 
         category = categoryRepository.save(category);
 
-        cacheService.invalidateCacheByPattern(
-                cacheKeyPrefix + CacheNames.CATEGORIES + CacheNames.SEPARATOR + userId + "-*"
-        );
-
         log.info("Category updated successfully!");
 
         return CategoryMapper.mapToResponse(category);
@@ -156,8 +150,7 @@ public class CategoryService implements ICategoryService {
 
     private Category getCategoryByIdAndUserId(Long categoryId, Long userId, Locale language) throws CashFlowException {
         log.info("Fetching category with id: {} from user: {}", categoryId, userId);
-
-        Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
+        Category category = categoryRepository.findByIdAndUserIdAndActiveTrue(categoryId, userId)
                 .orElseThrow(() -> {
                             log.error("Category not found.");
                             return new CashFlowException(
@@ -175,5 +168,24 @@ public class CategoryService implements ICategoryService {
         return category;
     }
 
+    @Override
+    @CacheClear(
+            value = APP_BASE_KEY + CacheNames.CATEGORIES,
+            patterns = { "#baseRequest.userId + '-*'" }
+    )
+    public void deleteCategoryById(BaseRequest<Long> baseRequest) throws CashFlowException {
+
+        log.info("Deleting category logically...");
+
+        long userId = baseRequest.getUserId();
+
+        Category category = getCategoryByIdAndUserId(baseRequest.getRequest(), userId, baseRequest.getLanguage());
+        category.deactivate(userId);
+
+        categoryRepository.save(category);
+
+        log.info("Category deleted successfully!");
+
+    }
 
 }
