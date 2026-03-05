@@ -65,7 +65,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryResponse"
+                  "$ref": "#/components/schemas/CategorySummaryResponse"
                 }
               }
             }
@@ -106,6 +106,238 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Edit category by ID",
+        "description": "Should edit a category for the provided category ID and request data",
+        "operationId": "editCategoryById",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Language to be used on response messages",
+            "example": "en"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT token",
+            "required": true,
+            "example": "JWT.TOKEN.HERE"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryEditionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized - JWT token is missing or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - No category found with the provided ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Duplicate tag name - Another tag with the same name already exists in the category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Category edited successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/core/category/{categoryId}": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Get category by ID",
+        "description": "Should return a category response for the provided category ID",
+        "operationId": "getCategoryById",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Language to be used on response messages",
+            "example": "en"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT token",
+            "required": true,
+            "example": "JWT.TOKEN.HERE"
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "The category ID to retrieve",
+            "example": 1
+          },
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized - JWT token is missing or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - No category found with the provided ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Category retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Delete category by ID",
+        "description": "Should delete a category and it's tags from the provided category ID",
+        "operationId": "deleteCategoryById",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Language to be used on response messages",
+            "example": "en"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT token",
+            "required": true,
+            "example": "JWT.TOKEN.HERE"
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "The category ID to delete",
+            "example": 1
+          },
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized - JWT token is missing or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - No category found with the provided ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Category deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
                 }
               }
             }
@@ -192,7 +424,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryResponse"
+                  "$ref": "#/components/schemas/CategorySummaryResponse"
                 }
               }
             }
@@ -238,7 +470,7 @@
         },
         "description": "Category creation request"
       },
-      "CategoryResponse": {
+      "CategorySummaryResponse": {
         "type": "object",
         "properties": {
           "id": {
@@ -263,7 +495,7 @@
             "example": ":)"
           }
         },
-        "description": "Category response"
+        "description": "Category summarized response"
       },
       "ExceptionResponse": {
         "type": "object",
@@ -290,6 +522,132 @@
           }
         },
         "description": "CashFlow's Exception base response."
+      },
+      "CategoryEditionRequest": {
+        "required": [
+          "id",
+          "name",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "Category name",
+            "example": "Groceries"
+          },
+          "color": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "Category color in HEX format",
+            "example": "#FF5733"
+          },
+          "icon": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "Category icon",
+            "example": ":)"
+          },
+          "tags": {
+            "type": "array",
+            "description": "List of tags associated with the category",
+            "items": {
+              "$ref": "#/components/schemas/TagRequest"
+            }
+          }
+        },
+        "description": "Category edition request"
+      },
+      "TagRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Tag ID",
+            "format": "int64",
+            "example": 1
+          },
+          "name": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "Tag name",
+            "example": "Important"
+          }
+        },
+        "description": "Tag request"
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Category ID",
+            "format": "int64",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Category name",
+            "example": "Groceries"
+          },
+          "color": {
+            "type": "string",
+            "description": "Category color in HEX format",
+            "example": "#FF5733"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Category icon",
+            "example": ":)"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the category was created",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "When the category was last updated",
+            "format": "date-time"
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags associated with the category",
+            "items": {
+              "$ref": "#/components/schemas/TagResponse"
+            }
+          }
+        },
+        "description": "Category complete response"
+      },
+      "TagResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Tag ID",
+            "format": "int64",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Tag name",
+            "example": "Important"
+          }
+        },
+        "description": "Tag response"
       }
     }
   }
